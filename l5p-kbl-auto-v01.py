@@ -11,19 +11,34 @@ home = os.path.expanduser("~")
 path_keys = "/dev/input/event5"
 device_keys = evdev.InputDevice(path_keys)
 
+purple_splotch_low = {
+    "z1": "110044",
+    "z2": "222244",
+    "z3": "222244",
+    "z4": "110044",
+    "b": "1",
+}
+purple_splotch_mid = {
+    "z1": "220088",
+    "z2": "444488",
+    "z3": "444488",
+    "z4": "220088",
+    "b": "1",
+}
 
-def kbl_on(z1="110044", z2="222244", z3="222244", z4="110044", brightness="1"):
+
+def kbl_on(color=purple_splotch_low):
     subprocess.run(
         [
             f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
             f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py",
             "static",
-            z1,
-            z2,
-            z3,
-            z4,
+            color["z1"],
+            color["z2"],
+            color["z3"],
+            color["z4"],
             "--brightness",
-            brightness,
+            color["b"],
         ]
     )
 
@@ -44,5 +59,5 @@ for event in device_keys.read_loop():
     if event.type == evdev.ecodes.EV_KEY:
         key_event = evdev.categorize(event)
         if key_event.keystate == evdev.KeyEvent.key_down:
-            kbl_on()
+            kbl_on(purple_splotch_mid)
             signal.alarm(60)
