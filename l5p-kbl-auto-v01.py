@@ -80,7 +80,7 @@ signal.signal(signal.SIGALRM, kbl_off)
 for event in device_keys.read_loop():
     if event.type == evdev.ecodes.EV_KEY:
         key_event = evdev.categorize(event)
-        if key_event.keystate == evdev.KeyEvent.key_down:
+        if key_event.keystate == evdev.KeyEvent.key_down: # type: ignore
             if not light_on_k:
                 kbl_on(purple_splotch_mid)
             signal.alarm(60)

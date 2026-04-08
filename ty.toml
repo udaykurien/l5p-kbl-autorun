@@ -1,0 +1,2 @@
+[environment]
+extra-paths = ["/usr/lib/python3/dist-packages"]
