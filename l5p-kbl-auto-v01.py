@@ -8,8 +8,24 @@ import evdev
 
 home = os.path.expanduser("~")
 
-path_keys = "/dev/input/event5"
-device_keys = evdev.InputDevice(path_keys)
+# path_keys = "/dev/input/event5"
+# device_keys = evdev.InputDevice(path_keys)
+
+
+def find_keyboard():
+    devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
+    for device in devices:
+        caps = device.capabilities()
+        # Check if device generates key events
+        if evdev.ecodes.EV_KEY in caps:
+            keys = caps[evdev.ecodes.EV_KEY]
+            # Look for common keyboard keys to be sure
+            if evdev.ecodes.KEY_A in keys and evdev.ecodes.KEY_Z in keys:
+                return device
+    return None
+
+
+device_keys = find_keyboard()
 
 purple_splotch_low = {
     "z1": "110044",
