@@ -6,6 +6,8 @@ import subprocess
 # make sure user is added to inputs group for evdev to work
 import evdev
 
+light_on_k = False
+
 home = os.path.expanduser("~")
 
 # path_keys = "/dev/input/event5"
@@ -44,6 +46,8 @@ purple_splotch_mid = {
 
 
 def kbl_on(color=purple_splotch_low):
+    global light_on_k
+    light_on_k = True
     subprocess.run(
         [
             f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
@@ -60,6 +64,8 @@ def kbl_on(color=purple_splotch_low):
 
 
 def kbl_off(signum, frame):
+    global light_on_k
+    light_on_k = False
     subprocess.run(
         [
             f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
@@ -75,5 +81,6 @@ for event in device_keys.read_loop():
     if event.type == evdev.ecodes.EV_KEY:
         key_event = evdev.categorize(event)
         if key_event.keystate == evdev.KeyEvent.key_down:
-            kbl_on(purple_splotch_mid)
+            if not light_on_k:
+                kbl_on(purple_splotch_mid)
             signal.alarm(60)
