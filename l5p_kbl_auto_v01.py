@@ -2,11 +2,14 @@
 import os
 import signal
 import subprocess
+import threading
 
 # make sure user is added to inputs group for evdev to work
 import evdev
 
 light_on_k = False
+
+timer = None
 
 purple_splotch_low = {
     "z1": "110044",
@@ -77,7 +80,7 @@ def kbl_on(color=purple_splotch_low):
     )
 
 
-def kbl_off(signum, frame):
+def kbl_off():
     global light_on_k
     light_on_k = False
     subprocess.run(
@@ -89,13 +92,20 @@ def kbl_off(signum, frame):
     )
 
 
+def timer_reset():
+    global timer
+    if timer is not None:
+        timer.cancel()
+    timer = threading.Timer(60, kbl_off)
+    timer.start()
+
+
 if __name__ == "__main__":
     device_keys = find_keyboard()
-    signal.signal(signal.SIGALRM, kbl_off)
     for event in device_keys.read_loop():
         if event.type == evdev.ecodes.EV_KEY:
             key_event = evdev.categorize(event)
             if key_event.keystate == evdev.KeyEvent.key_down:  # type: ignore
                 if not light_on_k:
                     kbl_on(purple_splotch_mid)
-                signal.alarm(60)
+                timer_reset()
