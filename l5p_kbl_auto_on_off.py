@@ -156,6 +156,5 @@ if __name__ == "__main__":
             if device == device_touch:
                 for event in device_touch.read():
                     if not light_on_k and not light_on_t:
-                        # kbl_breath(purple_splotch_mid)
-                        kbl_hue
+                        kbl_breath(purple_splotch_mid)
                     timer_reset(bl_time_3 if light_on_k else bl_time_2)
