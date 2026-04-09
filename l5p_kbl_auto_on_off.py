@@ -12,6 +12,7 @@ light_on_t = False
 
 bl_time_1 = 60  # Backlight time when key is pressed (s)
 bl_time_2 = 4  # Backlight time when touchpad is used (s)
+bl_time_3 = 10  # Backlight time when touchpad is used, while backlight from key is still active (s)
 
 timer = None
 
@@ -144,4 +145,4 @@ if __name__ == "__main__":
                 for event in device_touch.read():
                     if not light_on_k and not light_on_t:
                         kbl_breath(purple_splotch_mid)
-                    timer_reset(bl_time_1 if light_on_k else bl_time_2)
+                    timer_reset(bl_time_3 if light_on_k else bl_time_2)
