@@ -103,6 +103,18 @@ def kbl_breath(color=purple_splotch_low):
     )
 
 
+def kbl_hue(color=purple_splotch_low):
+    global light_on_t
+    light_on_t = True
+    subprocess.run(
+        [
+            f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
+            f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py",
+            "hue",
+        ]
+    )
+
+
 def kbl_off():
     global light_on_k, light_on_t
     light_on_k = False
@@ -144,5 +156,6 @@ if __name__ == "__main__":
             if device == device_touch:
                 for event in device_touch.read():
                     if not light_on_k and not light_on_t:
-                        kbl_breath(purple_splotch_mid)
+                        # kbl_breath(purple_splotch_mid)
+                        kbl_hue
                     timer_reset(bl_time_3 if light_on_k else bl_time_2)
