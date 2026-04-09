@@ -1,6 +1,5 @@
 # Use with corresponding systemd service file
 import os
-import signal
 import subprocess
 import threading
 
