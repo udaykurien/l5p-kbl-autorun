@@ -1,7 +1,6 @@
 Auto turn on and off keyboard backlight on keypress / idle time.
-
-Unit file example:
-[Unit]
+Unit file example: <br>
+[Unit] <br>
 Description=Keyboard backlight auto on/off
 After=multi-user.target
 
