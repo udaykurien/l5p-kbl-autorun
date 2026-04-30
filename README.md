@@ -9,8 +9,8 @@ After=multi-user.target <br>
 
 [Service] <br>
 Type=simple <br>
-User=<whoami> <br>
-ExecStart=<path-to-python-interpreter> <path-to-script> <br>
+User=$whoami <br>
+ExecStart=$path-to-python-interpreter $path-to-script <br>
 Restart=on-failure <br>
 
 <br>
