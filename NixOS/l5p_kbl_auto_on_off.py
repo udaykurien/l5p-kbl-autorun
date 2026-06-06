@@ -20,7 +20,7 @@ timer = None
 
 home = os.path.expanduser("~")
 
-with open(f"{home}/Stuff/Github/SystemPrograms/l5p-kbl-autorun/colors.json", "r") as f:
+with open(f"{home}/Stuff/Github/SystemPrograms/l5p-kbl-autorun/NixOS/colors.json", "r") as f:
     colors = json.load(f)
 
 default_color =  colors["salmon"]
