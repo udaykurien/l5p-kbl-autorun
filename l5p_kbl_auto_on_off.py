@@ -3,6 +3,7 @@ import os
 import select
 import subprocess
 import threading
+import json
 
 # make sure user is added to input group for evdev to work
 import evdev
@@ -17,22 +18,14 @@ bl_time_4 = 10  # Backlight time when touchpad is used, while backlight from key
 
 timer = None
 
-purple_splotch_low = {
-    "z1": "110044",
-    "z2": "222244",
-    "z3": "222244",
-    "z4": "110044",
-    "b": "1",
-}
-purple_splotch_mid = {
-    "z1": "220088",
-    "z2": "444488",
-    "z3": "444488",
-    "z4": "220088",
-    "b": "1",
-}
-
 home = os.path.expanduser("~")
+
+with open(f"{home}/Stuff/Github/SystemPrograms/l5p-kbl-autorun/colors.json", "r") as f:
+    colors = json.load(f)
+
+default_color =  colors["salmon"]
+selected_color_1 =  colors["salmon"]
+selected_color_2 =  colors["purple_low"]
 
 # NixOS: use system python instead of venv python so pyusb can find libusb
 # via LD_LIBRARY_PATH set in the systemd service environment
@@ -68,19 +61,19 @@ def find_touchpad():
 
 
 # NixOS: subprocess calls now use PYTHON/L5P_KBL instead of venv paths
-def kbl_on(color=purple_splotch_low):
+def kbl_on(color=default_color):
     global light_on_k
     light_on_k = True
     subprocess.run([PYTHON, L5P_KBL, "static", color["z1"], color["z2"], color["z3"], color["z4"], "--brightness", color["b"]])
 
 
-def kbl_breath(color=purple_splotch_low):
+def kbl_breath(color=default_color):
     global light_on_t
     light_on_t = True
     subprocess.run([PYTHON, L5P_KBL, "breath", color["z1"], color["z2"], color["z3"], color["z4"], "--brightness", color["b"]])
 
 
-def kbl_hue(color=purple_splotch_low):
+def kbl_hue():
     global light_on_t
     light_on_t = True
     subprocess.run([PYTHON, L5P_KBL, "hue"])
@@ -123,12 +116,12 @@ if __name__ == "__main__":
                             key_event = evdev.categorize(event)
                             if key_event.keystate == evdev.KeyEvent.key_down:
                                 if not light_on_k:
-                                    kbl_on(purple_splotch_mid)
+                                    kbl_on(selected_color_1)
                                 timer_reset(bl_time_2)
                 if device == device_touch:
                     for event in device_touch.read():
                         if not light_on_k and not light_on_t:
-                            kbl_on(purple_splotch_mid)
+                            kbl_on(selected_color_1)
                         timer_reset(bl_time_2)
 
         except Exception as e:
