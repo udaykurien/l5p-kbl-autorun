@@ -32,16 +32,16 @@ purple_splotch_mid = {
 }
 
 home = os.path.expanduser("~")
+PYTHON = "/run/current-system/sw/bin/python3"
+L5P_KBL = f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py"
 
 
 def find_keyboard():
     devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
     for device in devices:
         caps = device.capabilities()
-        # Check if device generates key events
         if evdev.ecodes.EV_KEY in caps:
             keys = caps[evdev.ecodes.EV_KEY]
-            # Look for common keyboard keys to be sure
             if evdev.ecodes.KEY_A in keys and evdev.ecodes.KEY_Z in keys:
                 return device
     return None
@@ -51,13 +51,9 @@ def find_touchpad():
     devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
     for device in devices:
         caps = device.capabilities()
-        # Check if device generates absolute axis events
         if evdev.ecodes.EV_ABS in caps:
-            # Check which specific absolute capabilites are present
             abs_caps = caps[evdev.ecodes.EV_ABS]
-            # Extract absolute axis
             axes = [abs_cap[0] for abs_cap in abs_caps]
-            # Check if device contains multitouch slot, MT X, MT ID etc
             if (
                 (evdev.ecodes.ABS_MT_SLOT in axes)
                 and (evdev.ecodes.ABS_MT_POSITION_X in axes)
@@ -70,62 +66,26 @@ def find_touchpad():
 def kbl_on(color=purple_splotch_low):
     global light_on_k
     light_on_k = True
-    subprocess.run(
-        [
-            f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
-            f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py",
-            "static",
-            color["z1"],
-            color["z2"],
-            color["z3"],
-            color["z4"],
-            "--brightness",
-            color["b"],
-        ]
-    )
+    subprocess.run([PYTHON, L5P_KBL, "static", color["z1"], color["z2"], color["z3"], color["z4"], "--brightness", color["b"]])
 
 
 def kbl_breath(color=purple_splotch_low):
     global light_on_t
     light_on_t = True
-    subprocess.run(
-        [
-            f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
-            f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py",
-            "breath",
-            color["z1"],
-            color["z2"],
-            color["z3"],
-            color["z4"],
-            "--brightness",
-            color["b"],
-        ]
-    )
+    subprocess.run([PYTHON, L5P_KBL, "breath", color["z1"], color["z2"], color["z3"], color["z4"], "--brightness", color["b"]])
 
 
 def kbl_hue(color=purple_splotch_low):
     global light_on_t
     light_on_t = True
-    subprocess.run(
-        [
-            f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
-            f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py",
-            "hue",
-        ]
-    )
+    subprocess.run([PYTHON, L5P_KBL, "hue"])
 
 
 def kbl_off():
     global light_on_k, light_on_t
     light_on_k = False
     light_on_t = False
-    subprocess.run(
-        [
-            f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
-            f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py",
-            "off",
-        ]
-    )
+    subprocess.run([PYTHON, L5P_KBL, "off"])
 
 
 def timer_reset(sec):
