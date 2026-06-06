@@ -72,7 +72,7 @@ def kbl_on(color=purple_splotch_low):
     light_on_k = True
     subprocess.run(
         [
-            f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
+            f"{home}/PyVenv/l5p_kbl/bin/python3",  # venv python directly
             f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py",
             "static",
             color["z1"],
@@ -90,7 +90,7 @@ def kbl_breath(color=purple_splotch_low):
     light_on_t = True
     subprocess.run(
         [
-            f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
+            f"{home}/PyVenv/l5p_kbl/bin/python3",  # venv python directly
             f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py",
             "breath",
             color["z1"],
@@ -108,7 +108,7 @@ def kbl_hue(color=purple_splotch_low):
     light_on_t = True
     subprocess.run(
         [
-            f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
+            f"{home}/PyVenv/l5p_kbl/bin/python3",  # venv python directly
             f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py",
             "hue",
         ]
@@ -121,7 +121,7 @@ def kbl_off():
     light_on_t = False
     subprocess.run(
         [
-            f"{home}/PyVenv/l5p-kbl/bin/python3",  # venv python directly
+            f"{home}/PyVenv/l5p_kbl/bin/python3",  # venv python directly
             f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py",
             "off",
         ]
