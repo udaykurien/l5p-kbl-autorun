@@ -4,15 +4,16 @@ import select
 import subprocess
 import threading
 
-# make sure user is added to inputs group for evdev to work
+# make sure user is added to input group for evdev to work
 import evdev
 
 light_on_k = False
 light_on_t = False
 
-bl_time_1 = 60  # Backlight time when key is pressed (s)
-bl_time_2 = 4  # Backlight time when touchpad is used (s)
-bl_time_3 = 10  # Backlight time when touchpad is used, while backlight from key is still active (s)
+bl_time_1 = 30  # Backlight time when key is pressed (s)/run/current-system/sw/bin/python3
+bl_time_2 = 45  # Backlight time when key is pressed (s)/run/current-system/sw/bin/python3
+bl_time_3 = 4   # Backlight time when touchpad is used (s)
+bl_time_4 = 10  # Backlight time when touchpad is used, while backlight from key is still active (s)
 
 timer = None
 
@@ -32,6 +33,9 @@ purple_splotch_mid = {
 }
 
 home = os.path.expanduser("~")
+
+# NixOS: use system python instead of venv python so pyusb can find libusb
+# via LD_LIBRARY_PATH set in the systemd service environment
 PYTHON = "/run/current-system/sw/bin/python3"
 L5P_KBL = f"{home}/Stuff/Github/SystemPrograms/l5p-kbl/l5p_kbl.py"
 
@@ -63,6 +67,7 @@ def find_touchpad():
     return None
 
 
+# NixOS: subprocess calls now use PYTHON/L5P_KBL instead of venv paths
 def kbl_on(color=purple_splotch_low):
     global light_on_k
     light_on_k = True
@@ -97,24 +102,37 @@ def timer_reset(sec):
 
 
 if __name__ == "__main__":
-    device_keys = find_keyboard()
-    device_touch = find_touchpad()
-
-    devices_to_monitor = [d for d in [device_keys, device_touch] if d is not None]
-
     while True:
-        readable, _, _ = select.select(devices_to_monitor, [], [])
-        for device in readable:
-            if device == device_keys:
-                for event in device_keys.read():
-                    if event.type == evdev.ecodes.EV_KEY:
-                        key_event = evdev.categorize(event)
-                        if key_event.keystate == evdev.KeyEvent.key_down:  # type: ignore
-                            if not light_on_k:
-                                kbl_on(purple_splotch_mid)
-                            timer_reset(bl_time_1)
-            if device == device_touch:
-                for event in device_touch.read():
-                    if not light_on_k and not light_on_t:
-                        kbl_breath(purple_splotch_mid)
-                    timer_reset(bl_time_3 if light_on_k else bl_time_2)
+        try:
+            # NixOS: moved device detection inside loop so devices are
+            # re-detected on error (e.g. after keyboard shortcut turns
+            # backlight off and disrupts the device handle)
+            device_keys = find_keyboard()
+            device_touch = find_touchpad()
+
+            print(f"Keyboard: {device_keys}")
+            print(f"Touchpad: {device_touch}")
+
+            devices_to_monitor = [d for d in [device_keys, device_touch] if d is not None]
+
+            readable, _, _ = select.select(devices_to_monitor, [], [])
+            for device in readable:
+                if device == device_keys:
+                    for event in device_keys.read():
+                        if event.type == evdev.ecodes.EV_KEY:
+                            key_event = evdev.categorize(event)
+                            if key_event.keystate == evdev.KeyEvent.key_down:
+                                if not light_on_k:
+                                    kbl_on(purple_splotch_mid)
+                                timer_reset(bl_time_2)
+                if device == device_touch:
+                    for event in device_touch.read():
+                        if not light_on_k and not light_on_t:
+                            kbl_on(purple_splotch_mid)
+                        timer_reset(bl_time_2)
+
+        except Exception as e:
+            # NixOS: catch all errors and continue instead of exiting,
+            # so the service recovers automatically without a restart
+            print(f"Error: {e}, restarting...")
+            continue
