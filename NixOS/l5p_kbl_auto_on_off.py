@@ -24,8 +24,8 @@ with open(f"{home}/Stuff/Github/SystemPrograms/l5p-kbl-autorun/NixOS/colors.json
     colors = json.load(f)
 
 default_color =  colors["salmon"]
-selected_color_1 =  colors["purple_mid"]
-selected_color_2 =  colors["purple_low"]
+selected_color_1 =  colors["cyber_purple_red"]
+selected_color_2 =  colors["purple_high"]
 
 # NixOS: use system python instead of venv python so pyusb can find libusb
 # via LD_LIBRARY_PATH set in the systemd service environment
